@@ -28,7 +28,7 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 
 
     // Send a POST request to the SaaS system to save the URL.
-    const response = await fetch('https://stg-api.accelerate.unic.ac.cy/my-files/webscraping', {
+    const response = await fetch('https://api.accelerate.unic.ac.cy/my-files/webscraping', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -119,7 +119,7 @@ async function saveUrl(token, url) {
     }
 
     // Send a POST request to the SaaS system to save the URL.
-    const response = await fetch('https://stg-api.accelerate.unic.ac.cy/my-files/webscraping', {
+    const response = await fetch('https://api.accelerate.unic.ac.cy/my-files/webscraping', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
