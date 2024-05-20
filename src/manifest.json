@@ -1,0 +1,52 @@
+{
+  // Specifies the version of the manifest file format. Chrome extensions currently use version 3.
+  "manifest_version": 3,
+  // The name of the extension as it will appear in the Chrome Web Store and the Extensions page.
+  "name": "SaaS URL Saver",
+  // The version of the extension. This should follow semantic versioning (e.g., 1.0.0, 1.1.0).
+  "version": "1.0.2",
+  // A brief description of what the extension does. This will be displayed in the Chrome Web Store.
+  "description": "Logs into a SaaS system and saves URLs. Provides a secure way to store and manage your URLs.",
+  // Specifies the permissions the extension needs to function. Each permission grants access to specific APIs or browser features.
+  "permissions": [
+    // Allows the extension to access the content of the active tab.
+    "activeTab",
+    // Allows the extension to use the chrome.storage API for storing data.
+    "storage",
+    // Allows the extension to create desktop notifications.
+    "notifications"
+  ],
+  // Defines the background script for the extension, which runs in the background and handles events.
+  "background": {
+    // Specifies the background script file.
+    "service_worker": "background.js"
+  },
+  // Defines the behavior and appearance of the extension's action button in the browser toolbar.
+  "action": {
+    // Specifies the HTML file to be displayed as a popup when the action button is clicked.
+    "default_popup": "popup.html",
+    // Specifies the icons for the action button in different sizes.
+    "default_icon": {
+      // Path to the 16x16 icon.
+      "16": "icons/icon16.png",
+      // Path to the 48x48 icon.
+      "48": "icons/icon48.png",
+      // Path to the 128x128 icon.
+      "128": "icons/icon128.png"
+    }
+  },
+  // Specifies the icons for the extension in different sizes. These icons are used in various places, such as the Extensions page and the Chrome Web Store.
+  "icons": {
+    // Path to the 16x16 icon.
+    "16": "icons/icon16.png",
+    // Path to the 48x48 icon.
+    "48": "icons/icon48.png",
+    // Path to the 128x128 icon.
+    "128": "icons/icon128.png"
+  },
+  // Defines the Content Security Policy (CSP) for the extension. CSP helps prevent cross-site scripting (XSS) and other code injection attacks.
+  "content_security_policy": {
+    // Specifies the policy for extension pages. The example policy allows scripts and objects to be loaded only from the extension itself.
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}
