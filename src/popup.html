@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Accelerate My Files</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div id="loginForm">
+        <form class="login-section card" onsubmit="return false;">
+          <h2 id="login-title">Login</h2>
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            placeholder="Enter your email address"
+            aria-required="true"
+            autocomplete="email"
+            value="savva.c@unic.ac.cy"
+          />
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            placeholder="Enter your password"
+            aria-required="true"
+            autocomplete="current-password"
+            value="test"
+          />
+          <button type="button" id="loginButton">Login</button>
+        </form>
+      </div>
+
+      <div id="loggedInView" style="display: none">
+        <div class="container">
+          <div class="save-section card">
+            <div class="checkbox-container">
+              <input type="checkbox" id="withImagesCheckbox">
+              <label for="withImagesCheckbox" id="withImagesCheckboxLabel">With Images</label>
+            </div>
+            <button  id="saveUrlButton" aria-label="Save the current URL to My Files">
+              Save Current URL
+            </button>
+            <button id="debugButton" style="display: none">
+              Debug
+            </button>
+          </div>
+          <div class="card">
+            <button type="button" id="logoutButton">Logout</button>
+          </div>
+        </div>
+
+
+      </div>
+      <div class="language-section card">
+        <label for="languageSelect">Language:</label>
+        <select id="languageSelect" aria-label="Select language">
+          <option value="en">English</option>
+          <option value="el">Greek</option>
+        </select>
+      </div>
+    </div>
+    <div
+      id="notification-container"
+      aria-live="assertive"
+      aria-atomic="true"
+      tabindex="-1"
+    ></div>
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>
