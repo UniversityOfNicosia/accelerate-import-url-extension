@@ -1,9 +1,10 @@
 // import CryptoJS from "crypto-js";
 // import { showNotification } from "./utils.js";
 
-const LOGIN_URL = "https://stg-api.accelerate.unic.ac.cy/auth/login";
-const WEBSCRAPING_URL =
-  "https://stg-api.accelerate.unic.ac.cy/my-files/webscraping";
+import { config } from './config';
+
+const LOGIN_URL = `${config.apiUrl}/auth/login`;
+const WEBSCRAPING_URL = `${config.apiUrl}/my-files/webscraping`;
 
 // Use environment variables or another secure method to manage your secret key
 // const SECRET_KEY = process.env.SECRET_KEY || "your_secure_secret_key";
@@ -99,7 +100,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   try {
     if (request.action === "login") {
       handleLogin(request.credentials, sendResponse)
-        .then(() => sendResponse({ success: true, action: "loginSuccess" }))
+        .then((data) => {
+
+          if(data.success === true) {
+            sendResponse({ success: true, action: "loginSuccess" })
+          }else{
+            sendResponse({ success: false, error: data.message })
+          }
+
+        })
         .catch((error) =>
           sendResponse({ success: false, error: error.message })
         );
@@ -132,6 +141,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       );
       return true;
     }
+    else if(request.action === "test_url") {
+      getCurrentTabUrl()
+        .then((url) => {
+          console.log(url);
+        })
+        .catch((error) =>
+          console.log(error)
+        );
+    }
   } catch (error) {
     console.error("Error: ", error.message);
     sendResponse({
@@ -157,7 +175,7 @@ async function handleLogin(credentials, sendResponse) {
       await setToken(data.accessToken);
       return { success: true, message: "Login successful." };
     } else {
-      return { success: true, message: "Login successful." };
+      return { success: false, message: "Login failed." };
     }
   } catch (error) {
     return {
@@ -166,6 +184,37 @@ async function handleLogin(credentials, sendResponse) {
     };
   }
 }
+
+async function getCurrentTabUrl() {
+  try {
+    const tabs = await new Promise((resolve, reject) => {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (chrome.runtime.lastError) {
+          console.error('Error querying tabs:', chrome.runtime.lastError.message);
+          reject(new Error(`Error querying tabs: ${chrome.runtime.lastError.message}`));
+        } else {
+          console.log('Tabs queried:', tabs);
+          resolve(tabs);
+        }
+      });
+    });
+
+    const url = tabs[0]?.url;
+    // console.log('Tabs queried:', tabs);
+    // console.log('URL found:', url);
+
+    if (url) {
+      // console.log('Current tab URL:', url);
+      return url;
+    } else {
+      throw new Error('No active tab found');
+    }
+  } catch (error) {
+    console.error('Error occurred:', error);
+    return null;
+  }
+}
+
 
 async function handleSaveUrl(withImages, sendResponse) {
   try {
@@ -178,20 +227,22 @@ async function handleSaveUrl(withImages, sendResponse) {
       return;
     }
 
-    const tabs = await new Promise((resolve, reject) => {
-      chrome.tabs.query({ active: true, currentWindow: true}, (tabs) => {
-        if (chrome.runtime.lastError) {
-          reject(
-            new Error(
-              `Error querying tabs: ${chrome.runtime.lastError.message}`
-            )
-          );
-        } else {
-          resolve(tabs);
-        }
-      });
-    });
-    const url = tabs[0]?.url;
+    // const tabs = await new Promise((resolve, reject) => {
+    //   chrome.tabs.query({ active: true, currentWindow: true}, (tabs) => {
+    //     if (chrome.runtime.lastError) {
+    //       reject(
+    //         new Error(
+    //           `Error querying tabs: ${chrome.runtime.lastError.message}`
+    //         )
+    //       );
+    //     } else {
+    //       resolve(tabs);
+    //     }
+    //   });
+    // });
+    // const url = tabs[0]?.url;
+
+    const url = await getCurrentTabUrl();
 
     if (!isValidUrl(url)) {
       sendResponse({ success: false, message: "Invalid URL format" });
@@ -204,7 +255,7 @@ async function handleSaveUrl(withImages, sendResponse) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ Url: url, FetchImages: withImages }),
+      body: JSON.stringify({ Url: url, FetchImages: withImages, FolderID: null}),
     });
 
     const data = await handleFetchResponse(response);

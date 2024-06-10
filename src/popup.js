@@ -5,7 +5,7 @@ import {
   handleLogout,
   handleSaveUrl,
   handleEmailInput,
-  handlePasswordInput, isTokenValid,
+  handlePasswordInput, isTokenValid
 } from "./eventHandlers.js";
 import { updateUILanguage } from "./utils/domUtils.js";
 import { sanitizeInput } from "./utils/apiUtils.js";
@@ -18,14 +18,6 @@ const notification = new Notification(notificationContainer);
 const eventListenerManager = new EventListenerManager();
 
 let loginAttempts = 0;
-let sessionTimeout;
-
-// Function to get the token
-function getToken(callback) {
-  chrome.storage.local.get(["token"], function (result) {
-    callback(result.token);
-  });
-}
 
 function toogleLoginView() {
 
@@ -57,17 +49,13 @@ function toogleLoginView() {
 }
 
 function debugUrl() {
-  chrome.tabs.query({ active: true, currentWindow: true}, (tabs) => {
-    if (chrome.runtime.lastError) {
-      reject(
-        new Error(
-          `Error querying tabs: ${chrome.runtime.lastError.message}`
-        )
-      );
-    } else {
-      console.log(tabs)
-    }
-  })
+  debugUrlEvent()
+    .then((response) => {
+      console.log("response", response);
+    })
+    .catch((error) => {
+      console.error(error);
+    })
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -77,8 +65,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const languageSelect = document.getElementById("languageSelect");
   const logoutButton = document.getElementById("logoutButton");
   const debugButton = document.getElementById("debugButton");
-
-
 
   toogleLoginView();
 
@@ -95,17 +81,12 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-
-
-
   chrome.storage.local.get(["language"], (result) => {
     if (result.language) {
       languageSelect.value = result.language;
       updateUILanguage(result.language);
     }
   });
-
-  // resetSessionTimeout();
 
   const emailInput = document.getElementById("email");
   const passwordInput = document.getElementById("password");
@@ -125,10 +106,6 @@ document.addEventListener("DOMContentLoaded", () => {
       handlePasswordInput(this.value);
     }, 300)
   );
-
-  eventListenerManager.addEventListener(debugButton, "click", function(){
-    debugUrl()
-  })
 
   eventListenerManager.addEventListener(logoutButton, "click", function () {
     chrome.storage.local.remove("token", function () {
@@ -172,30 +149,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // eventListenerManager.addEventListener(
-  //   document,
-  //   "mousemove",
-  //   resetSessionTimeout,
-  //   { passive: true }
-  // );
-  // eventListenerManager.addEventListener(
-  //   document,
-  //   "keypress",
-  //   resetSessionTimeout
-  // );
 });
 
-// /**
-//  * Resets the session timeout, logging out the user after a period of inactivity
-//  */
-// function resetSessionTimeout() {
-//   if (sessionTimeout) {
-//     clearTimeout(sessionTimeout);
-//   }
-//   sessionTimeout = setTimeout(() => {
-//     alert(
-//       "Session timeout [E103]: Your session has expired. Please log in again to continue."
-//     );
-//     // Add logic to log out the user
-//   }, config.sessionTimeout);
-// }
+

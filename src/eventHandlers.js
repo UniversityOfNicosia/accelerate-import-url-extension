@@ -15,6 +15,7 @@ const notification = new Notification(notificationContainer);
 
 let loginAttempts = 0;
 
+
 export function handleLogout() {
   chrome.storage.local.remove("token", function () {
     if (chrome.runtime.lastError) {
@@ -107,7 +108,7 @@ export async function handleLogin(button) {
     });
 
     notification.show(
-      response.success ? "Log in successfull" : "Error logging in",
+      response.success ? "Log in successfully" : "Error logging in",
       response.success ? "success" : "error"
     );
   } catch (error) {
@@ -157,6 +158,8 @@ export async function handleSaveUrl(button, withImages) {
   } finally {
     hideLoadingIndicator(button);
   }
+
+  return true;
 }
 
 /**
